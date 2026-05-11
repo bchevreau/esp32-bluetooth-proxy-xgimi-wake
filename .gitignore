@@ -1,0 +1,20 @@
+# ESPHome build files
+.esphome/
+*.bin
+*.elf
+*.bin.log
+*.yaml.h
+
+# Local secret files
+secrets.yaml
+esp32-ble-proxy-xgimi-original.yaml
+
+# Editor files
+.vscode/
+*.user
+*.suo
+*.swp
+
+# Python cache
+__pycache__/
+*.pyc

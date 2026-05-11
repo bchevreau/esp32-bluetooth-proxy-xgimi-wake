@@ -1,0 +1,110 @@
+substitutions:
+  name: esp32-bluetooth-proxy-xgimi-wake
+  friendly_name: Bluetooth Proxy XGIMI Wake
+  xgimi_projector_key: ""
+  xgimi_wake_repeat_count: "3"
+
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+  friendly_name: ${friendly_name}
+
+logger:
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+esp32_ble:
+  id: ble
+
+# Keeps the device actively advertising so the wake payload can be swapped in.
+esp32_ble_server:
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: true
+
+bluetooth_proxy:
+  active: true
+
+text:
+  - platform: template
+    id: xgimi_projector_key_text
+    name: XGIMI Projector Key
+    icon: "mdi:key"
+    mode: password
+    min_length: 0
+    max_length: 96
+    optimistic: true
+    restore_value: true
+    initial_value: "${xgimi_projector_key}"
+
+button:
+  - platform: template
+    name: XGIMI Projector Wakeup
+    icon: "mdi:projector"
+    on_press:
+      - repeat:
+          count: ${xgimi_wake_repeat_count}
+          then:
+            - lambda: |-
+                auto hexval = [](char c) -> int {
+                  if (c >= '0' && c <= '9') return c - '0';
+                  if (c >= 'a' && c <= 'f') return 10 + (c - 'a');
+                  if (c >= 'A' && c <= 'F') return 10 + (c - 'A');
+                  return -1;
+                };
+
+                std::string hex = id(xgimi_projector_key_text).state;
+                std::vector<uint8_t> key;
+                key.reserve(hex.size() / 2);
+
+                bool high = true;
+                uint8_t value = 0;
+                for (char c : hex) {
+                  if (c == ' ' || c == ':' || c == '-' || c == '_' || c == '\n' || c == '\r' || c == '\t')
+                    continue;
+
+                  int nibble = hexval(c);
+                  if (nibble < 0) {
+                    ESP_LOGE("xgimi_wake", "Projector key contains a non-hex character: %c", c);
+                    return;
+                  }
+
+                  if (high) {
+                    value = static_cast<uint8_t>(nibble << 4);
+                    high = false;
+                  } else {
+                    value |= static_cast<uint8_t>(nibble);
+                    key.push_back(value);
+                    high = true;
+                  }
+                }
+
+                if (!high) {
+                  ESP_LOGE("xgimi_wake", "Projector key has an odd number of hex characters");
+                  return;
+                }
+
+                if (key.empty()) {
+                  ESP_LOGE("xgimi_wake", "Projector key is empty");
+                  return;
+                }
+
+                std::vector<uint8_t> data;
+                data.reserve(2 + key.size());
+                data.push_back(0x46);
+                data.push_back(0x00);
+                data.insert(data.end(), key.begin(), key.end());
+                id(ble).advertising_set_manufacturer_data(data);
+            - delay: 1s
+            - lambda: |-
+                std::vector<uint8_t> data = {0x46, 0x00};
+                id(ble).advertising_set_manufacturer_data(data);
+            - delay: 1s
+
+  - platform: safe_mode
+    name: Safe Mode Boot
+    entity_category: diagnostic
