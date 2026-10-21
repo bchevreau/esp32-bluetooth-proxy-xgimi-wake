@@ -1,0 +1,16 @@
+# Synthetic validation only; these are not real credentials or a projector key.
+substitutions:
+  name: xgimi-test-esp32
+  xgimi_projector_key: "00000000000000000000000000000000"
+
+packages:
+  xgimi_wake: !include ../package.yaml
+
+wifi:
+  ssid: xgimi-validation
+  password: validation-only
+
+api:
+
+ota:
+  - platform: esphome
