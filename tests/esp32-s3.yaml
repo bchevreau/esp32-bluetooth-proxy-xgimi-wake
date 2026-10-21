@@ -1,0 +1,28 @@
+# Synthetic validation only; these are not real credentials or a projector key.
+substitutions:
+  name: xgimi-test-esp32-s3
+  xgimi_projector_key: "00000000000000000000000000000000"
+
+packages:
+  xgimi_wake: !include ../package.yaml
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: ESP32S3
+  framework:
+    type: esp-idf
+
+esp32_ble_tracker:
+  scan_parameters:
+    interval: 320ms
+    window: 30ms
+    active: true
+
+wifi:
+  ssid: xgimi-validation
+  password: validation-only
+
+api:
+
+ota:
+  - platform: esphome

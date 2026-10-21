@@ -101,6 +101,43 @@ When you run ESPHome from Home Assistant or the CLI, ESPHome reads your local YA
 
 To receive changes from this package repo, update the package ref in your local YAML or use a newer release tag, then compile and upload again.
 
+## ESPHome 2026.9 And Later
+
+ESPHome 2026.9 changed BLE advertising to require an explicit advertising request.
+An empty `esp32_ble_server:` no longer starts advertising, and changing the
+manufacturer payload from a lambda no longer starts it implicitly. See
+[ESPHome PR #18943](https://github.com/esphome/esphome/pull/18943).
+
+This package configures `manufacturer_data: [0x46, 0x00]` on the BLE server so it
+requests advertising. The wake button replaces that idle company ID with the
+projector payload, then restores the idle bytes using the existing timing.
+Bluetooth proxy scanning and connections are separate from transmitting this
+wake advertisement, so a connected proxy does not confirm that wake advertising
+is working.
+
+The `v0.1.0` tag predates this fix. If you keep that package ref, add this override
+to your local importing YAML, then recompile and upload:
+
+```yaml
+esp32_ble_server:
+  manufacturer_data: [0x46, 0x00]
+```
+
+## Development Validation
+
+Install the ESPHome version you want to check, then run:
+
+```bash
+python tests/validate.py
+```
+
+This validates synthetic ESP32 and ESP32-S3 configurations, generates their C++,
+and checks that the server requests advertising on ESPHome 2026.9 and later.
+CI runs these checks on ESPHome 2026.8.2, 2026.9.0, and 2026.10.0, and compiles
+both firmware images on 2026.10.0. To compile locally as well, run
+`python tests/validate.py --compile`.
+These checks do not flash hardware or verify over-the-air reception by a projector.
+
 ## Notes
 
 - Remote ESPHome packages cannot contain `!secret` lookups. Secrets belong in the local YAML that imports the package.

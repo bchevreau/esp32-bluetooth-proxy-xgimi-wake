@@ -19,8 +19,10 @@ esp32:
 esp32_ble:
   id: ble
 
-# Keeps the device actively advertising so the wake payload can be swapped in.
+# ESPHome 2026.9+ only requests server advertising when data or services are
+# configured. Seed the idle company ID so runtime wake payload updates broadcast.
 esp32_ble_server:
+  manufacturer_data: [0x46, 0x00]
 
 esp32_ble_tracker:
   scan_parameters:
