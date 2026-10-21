@@ -4,7 +4,7 @@ substitutions:
   xgimi_projector_key: !secret xgimi_projector_key
 
 packages:
-  xgimi_wake: github://bchevreau/esp32-bluetooth-proxy-xgimi-wake/package.yaml@v0.1.0
+  xgimi_wake: github://bchevreau/esp32-bluetooth-proxy-xgimi-wake/package.yaml@v0.1.1
 
 api:
   encryption:

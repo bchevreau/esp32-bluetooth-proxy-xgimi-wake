@@ -1,5 +1,22 @@
 # Release Plan
 
+## v0.1.1
+
+- Restore wake advertising on ESPHome 2026.9 and later by configuring the BLE
+  server with the idle manufacturer bytes `[0x46, 0x00]`.
+- Preserve the wake payload, key handling, repeat count, and timing.
+- Add ESP32 and ESP32-S3 configuration/code-generation checks on ESPHome
+  2026.8.2, 2026.9.0, and 2026.10.0, plus full firmware builds on 2026.10.0.
+- Verify live ESP32 (`esp32dev`) OTA installation through Home Assistant's
+  ESPHome 2026.9.1 builder: the wake button brought independent Android TV
+  remote/player entities online in approximately six seconds, with no errors
+  in the bounded device-log capture.
+- ESP32-S3 hardware confirmation on 2026.10.0 remains pending from the reporter.
+
+Upgrade the GitHub package reference to `@v0.1.1`, then recompile and upload.
+See [PR #2](https://github.com/bchevreau/esp32-bluetooth-proxy-xgimi-wake/pull/2)
+and [issue #1](https://github.com/bchevreau/esp32-bluetooth-proxy-xgimi-wake/issues/1).
+
 ## v0.1.0
 
 - [x] Preserve the working BLE advertising behavior from the prototype

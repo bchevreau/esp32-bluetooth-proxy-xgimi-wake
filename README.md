@@ -33,7 +33,7 @@ substitutions:
   xgimi_projector_key: !secret xgimi_projector_key
 
 packages:
-  xgimi_wake: github://bchevreau/esp32-bluetooth-proxy-xgimi-wake/package.yaml@v0.1.0
+  xgimi_wake: github://bchevreau/esp32-bluetooth-proxy-xgimi-wake/package.yaml@v0.1.1
 
 api:
   encryption:
@@ -115,7 +115,8 @@ Bluetooth proxy scanning and connections are separate from transmitting this
 wake advertisement, so a connected proxy does not confirm that wake advertising
 is working.
 
-The `v0.1.0` tag predates this fix. If you keep that package ref, add this override
+The fix is included in `v0.1.1`. Update your package ref, recompile, and upload to
+receive it. The `v0.1.0` tag predates this fix. If you keep that ref, add this override
 to your local importing YAML, then recompile and upload:
 
 ```yaml
